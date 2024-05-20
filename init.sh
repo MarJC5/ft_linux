@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# - Partition the disk (boot, root, swap)
 # - Check the vm deps & packages versions
+# - Partition the disk (boot, root, swap)
 # - Build the kernel
 # - Copy the kernel to the boot partition
 # - Copy the modules to the root partition
@@ -26,15 +26,25 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Partition the disk
-bash ./setup/partition_disk.sh
+source "${BASE_DIR}/utils/parser.sh"
+
+# Load configuration
+sys_name=$(parse_ini "system" "name" "$config_file")
+
+# export the LFS variable
+echo "Exporting LFS variable..."
+export LFS="/mnt/${sys_name}"
+echo "LFS variable exported as $LFS"
 
 # Check the vm deps & packages versions
 bash ./setup/install_deps.sh
 bash ./setup/check_deps.sh
 
-# Build the kernel
+# Main script
 if [ $? -eq 0 ]; then
+    # Partition the disk
+    bash ./setup/partition_disk.sh
+    bash ./setup/mount_partition.sh
     # bash ./setup/build_kernel.sh
 else
     echo "Error: not all dependencies are installed to build the kernel"
