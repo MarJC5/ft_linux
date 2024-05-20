@@ -11,6 +11,12 @@
 # Exit on error
 set -e
 
+# Ensure the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
 # Base directory for the script relative to where it's executed from
 BASE_DIR=$(dirname "$(realpath "$0")")
 
@@ -29,7 +35,7 @@ bash ./setup/check_deps.sh
 
 # Build the kernel
 if [ $? -eq 0 ]; then
-    bash ./setup/build_kernel.sh
+    # bash ./setup/build_kernel.sh
 else
     echo "Error: not all dependencies are installed to build the kernel"
     exit 1

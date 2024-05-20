@@ -3,6 +3,12 @@
 # Base directory for the script relative to where it's executed from
 BASE_DIR=$(dirname "$(realpath "$0")")
 
+# Ensure the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
 # Path to the package configuration file
 config_file="${BASE_DIR}/../config/system.conf"
 

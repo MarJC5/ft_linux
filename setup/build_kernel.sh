@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Ensure the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
 # Base directory for the script relative to where it's executed from
 BASE_DIR=$(dirname "$(realpath "$0")")
 
@@ -18,8 +24,12 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
+source "${BASE_DIR}/../utils/parser.sh"
+
 # Load configuration
-source "$config_file"
+version=$(parse_ini "kernel" "version" "$config_file")
+download_url=$(parse_ini "kernel" "download_url" "$config_file")
+kernel_name=$(parse_ini "kernel" "name" "$config_file")
 
 # Validate loaded configuration
 if [ -z "$version" ] || [ -z "$download_url" ] || [ -z "$kernel_name" ]; then
