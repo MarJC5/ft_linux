@@ -33,6 +33,12 @@ echo -e "${YELLOW}Mounting the partitions...${NC}"
 disk=$(parse_ini "partition" "disk" "$config_file")
 sys_name=$(parse_ini "system" "name" "$config_file")
 
+# Check if the disk is already mounted
+if mount | grep -qs "$disk"; then
+  echo "$disk is already mounted."
+  exit 0
+fi
+
 # Confirm loaded configurations
 echo "Partition to be mounted: $disk"
 

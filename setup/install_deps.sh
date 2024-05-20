@@ -22,7 +22,7 @@ echo "Updating APT cache..."
 apt-get update -m
 
 echo "Installing necessary packages..."
-apt-get install -y bzip2 git vim make gcc g++ libncurses-dev flex bison bc cpio libelf-dev libssl-dev kmod grub2-common gawk texinfo fdisk dwarves
+apt-get install -y bzip2 git wget vim make gcc g++ libncurses-dev flex bison bc cpio libelf-dev libssl-dev kmod grub2-common gawk texinfo fdisk dwarves
 
 # Ensuring gawk is used as awk
 if [ ! -L /usr/bin/awk ]; then
