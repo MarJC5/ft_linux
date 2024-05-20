@@ -27,39 +27,23 @@ fi
 source "${BASE_DIR}/../utils/parser.sh"
 
 # Load configuration
-version=$(parse_ini "kernel" "version" "$config_file")
-download_url=$(parse_ini "kernel" "download_url" "$config_file")
 kernel_name=$(parse_ini "kernel" "name" "$config_file")
+kernel_archive_path=$(find $LFS -type f -name "linux-*.tar.xz" | head -n 1)
+version=$(echo $kernel_archive_path | sed -n 's/.*linux-\(.*\).tar.xz/\1/p')
+kernel_extract_dir="${LFS}/usr/src/kernel-$version"
 
 # Validate loaded configuration
-if [ -z "$version" ] || [ -z "$download_url" ] || [ -z "$kernel_name" ]; then
+if [ -z "$kernel_name" ]; then
     echo -e "${RED}Kernel configuration details are not fully specified in the configuration file.${NC}"
     exit 1
 fi
 
-echo -e "${YELLOW}Preparing to build Linux Kernel: $kernel_name Version $version...${NC}"
-
-# Define the correct paths and filenames
-kernel_archive_path="/usr/src/linux-$version.tar.xz"
-kernel_extract_dir="/usr/src/kernel-$version"
+echo -e "${YELLOW}Preparing to build Linux Kernel: $kernel_name${NC}"
 
 # Check if the kernel source already exists
 if [ -d "$kernel_extract_dir" ]; then
     echo -e "${RED}Kernel source already exists in $kernel_extract_dir.${NC}"
 else
-    # Download the kernel source code
-    echo -e "${YELLOW}Downloading kernel from $download_url...${NC}"
-    wget "$download_url" -O "$kernel_archive_path"
-
-    # Check if the download was successful
-    if [ ! -f "$kernel_archive_path" ]; then
-        echo -e "${RED}Failed to download the kernel source.${NC}"
-        exit 1
-    fi
-
-    # Create the directory for extraction
-    mkdir -p "$kernel_extract_dir"
-
     # Extract the kernel source
     echo -e "${YELLOW}Extracting kernel source...${NC}"
     tar -xf "$kernel_archive_path" -C "$kernel_extract_dir" --strip-components=1
@@ -85,7 +69,6 @@ fi
 
 # Append custom local version for identifying this build
 echo "CONFIG_LOCALVERSION=\"-$kernel_name\"" >> .config
-echo "CONFIG_SYSTEM_TRUSTED_KEYS=\"\"" >> .config
 
 echo -e "${YELLOW}Compiling kernel...${NC}"
 make -j$(nproc) || { echo -e "${RED}Failed to compile the kernel.${NC}"; exit 1; }

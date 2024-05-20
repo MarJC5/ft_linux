@@ -3,12 +3,10 @@
 # - Check the vm deps & packages versions
 # - Partition the disk (boot, root, swap)
 # - Mount the partitions
-# - Download the packages
-# - Build the kernel
-# - Copy the kernel to the boot partition
-# - Copy the modules to the root partition
-# - Update the bootloader configuration
-# - Reboot
+# - Download the packages & verify them
+# - Build layouts
+# - Create the user and set the password
+
 
 # Exit on error
 set -e
@@ -26,16 +24,17 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Check the vm deps & packages versions
+bash ./setup.sh
 bash ./setup/install_deps.sh
 bash ./setup/check_deps.sh
-bash ./setup/setup.sh
 
 # Main script
 if [ $? -eq 0 ]; then
     bash ./setup/partition_disk.sh
     bash ./setup/mount_partition.sh
     bash ./setup/setup_packages.sh
-    # bash ./setup/build_kernel.sh
+    bash ./setup/setup_layout.sh
+    bash ./setup/setup_user.sh
 else
     echo "Error: not all dependencies are installed to build the kernel"
     exit 1
