@@ -51,3 +51,31 @@ chown -v $sys_name $LFS/{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
   x86_64) chown -v $sys_name $LFS/lib64 ;;
 esac
+
+# Setup bash profile for the new user
+echo "Setting up bash profile for $sys_name"
+
+cat > /home/$sys_name/.bash_profile << EOF
+exec env -i HOME=\$HOME TERM=\$TERM PS1='\u:\w\$ ' /bin/bash
+EOF
+
+cat > /home/$sys_name/.bashrc << EOF
+set +h
+umask 022
+LFS=/mnt/$sys_name
+LC_ALL=POSIX
+LFS_TGT=$(uname -m)-lfs-linux-gnu
+PATH=/usr/bin
+if [ ! -L /bin ]; then PATH=/bin:\$PATH; fi
+PATH=\$LFS/tools/bin:\$PATH
+CONFIG_SITE=\$LFS/usr/share/config.site
+export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
+EOF
+
+cat >> /home/$sys_name/.bashrc << EOF
+export MAKEFLAGS=-j$(nproc)
+EOF
+
+echo "Source the bash profile"
+
+source /home/$sys_name/.bash_profile
