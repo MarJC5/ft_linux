@@ -10,7 +10,7 @@ fi
 BASE_DIR=$(dirname "$(realpath "$0")")
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
+config_file="${BASE_DIR}/config/disk.conf"
 
 # Color codes
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${BASE_DIR}/utils/parser.sh"
 
 # Load configuration
 sys_name=$(parse_ini "system" "name" "$config_file")
