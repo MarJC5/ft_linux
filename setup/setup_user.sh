@@ -76,6 +76,8 @@ cat >> /home/$sys_name/.bashrc << EOF
 export MAKEFLAGS=-j$(nproc)
 EOF
 
+[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
+
 echo "Source the bash profile"
 
 source /home/$sys_name/.bash_profile
