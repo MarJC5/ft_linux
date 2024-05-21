@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
+config_file="${config_path}/disk.conf"
 
 # Color codes
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Load configuration
 sys_name=$(parse_ini "system" "name" "$config_file")
@@ -52,6 +52,9 @@ case $(uname -m) in
   x86_64) chown -v $sys_name $LFS/lib64 ;;
 esac
 
+# Add to sudoers
+echo "$sys_name ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 # Setup bash profile for the new user
 echo "Setting up bash profile for $sys_name"
 
@@ -74,6 +77,7 @@ EOF
 
 cat >> /home/$sys_name/.bashrc << EOF
 export MAKEFLAGS=-j$(nproc)
+export LFS_SCRIPT_PATH=$base_path
 EOF
 
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE

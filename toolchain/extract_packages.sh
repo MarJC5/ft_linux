@@ -6,17 +6,17 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-# Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
-
-# Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
-
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+# Determine the directory where the script is located, resolving symlinks
+source "/media/share/utils/resolver.sh"
+
+# Define the path to the configuration file
+config_file="${config_path}/disk.conf"
 
 # Check if the configuration file exists
 if [ ! -f "$config_file" ]; then
@@ -24,21 +24,16 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+# Source other scripts from the correct path
+source "${utils_path}/parser.sh"
 
 # Load configuration
 sys_name=$(parse_ini "system" "name" "$config_file")
 LFS="/mnt/${sys_name}"
 
-# Extract the packages
-echo -e "${GREEN}Extracting package...${NC}"
-
-# Read the packages to install from the packages file in config/packages
-
-for package in $(cat "${BASE_DIR}/../config/packages"); do
-    if [ -f "${BASE_DIR}/../packages/${package}.sh" ]; then
-        source "${BASE_DIR}/../packages/${package}.sh"
-    else
-        echo -e "${RED}Package not found: ${package}.sh${NC}"
+# Processing packages
+for package in $(cat "${config_path}/packages"); do
+    if [ -f "${packages_path}/${package}.sh" ]; then
+        source "${packages_path}/${package}.sh"
     fi
 done

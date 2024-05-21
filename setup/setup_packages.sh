@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
+config_file="${config_path}/disk.conf"
 
 # Color codes
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Load configuration
 disk=$(parse_ini "partition" "disk" "$config_file")
@@ -35,11 +35,11 @@ mkdir -v $LFS/sources
 chmod -v a+wt $LFS/sources
 
 # Download the packages from the wget-list
-wget --input-file="${BASE_DIR}/../config/wget-list-sysv" --continue --directory-prefix=$LFS/sources
+wget --input-file="${config_path}/wget-list-sysv" --continue --directory-prefix=$LFS/sources
 
 # Verify the packages
 pushd $LFS/sources
-  md5sum -c "${BASE_DIR}/../config/md5sums"
+  md5sum -c "${config_path}/md5sums"
 popd
 
 # Echo the success message

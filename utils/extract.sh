@@ -10,11 +10,11 @@ extract_package() {
         exit 1
     fi
 
-    # Base directory for the script relative to where it's executed from
-    BASE_DIR=$(dirname "$(realpath "$0")")
+    # Determine the directory where the script is located, resolving symlinks
+    source "/media/share/utils/resolver.sh"
 
     # Define the path to the configuration file
-    config_file="${BASE_DIR}/../config/disk.conf"
+    config_file="${config_path}/disk.conf"
 
     # Color codes
     RED='\033[0;31m'
@@ -28,14 +28,19 @@ extract_package() {
         exit 1
     fi
 
-    source "${BASE_DIR}/../utils/parser.sh"
+    source "${utils_path}/parser.sh"
 
     # Load configuration
     sys_name=$(parse_ini "system" "name" "$config_file")
     LFS="/mnt/${sys_name}"
 
     # Extract the packages
-    echo -e "${GREEN}Extracting package...${NC}"
-    tar -xf "${LFS}/sources/${package}" -C "${LFS}/${dest}"
-    echo -e "${GREEN}Package extracted successfully${NC}"
+    echo -e "Extracting package ${YELLOW}${package}${NC}..."
+    tar -xvf "${LFS}/sources/${package}" -C "${LFS}/${dest}"
+    # Check if package is extracted successfully
+    if [ $? -ne 0 ]; then
+        echo -e "Failed to extract package ${RED}${package}${NC}"
+        exit 1
+    fi
+    echo -e "Package ${GREEN}${package}${NC} extracted successfully to ${LFS}/${dest}"
 }

@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
+config_file="${config_path}/disk.conf"
 
 # Check if the configuration file exists
 if [ ! -f "$config_file" ]; then
@@ -18,7 +18,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Load configuration
 sys_name=$(parse_ini "system" "name" "$config_file")

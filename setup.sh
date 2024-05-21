@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/config/disk.conf"
+config_file="${config_path}/disk.conf"
 
 # Color codes
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Load configuration
 sys_name=$(parse_ini "system" "name" "$config_file")
@@ -37,6 +37,7 @@ echo "LFS variable exported as $LFS"
 # Save LFS variable to /etc/profile if not already there
 if ! grep -qs "export LFS" /etc/profile; then
     echo "export LFS=${LFS}" >> /etc/profile
+    echo "export LFS_SCRIPT_PATH=${base_path}" >> /etc/profile
     echo "LFS variable saved to /etc/profile"
 fi
 
@@ -53,6 +54,18 @@ fi
 if ! grep -qs "export LFS" ~/.bashrc; then
     echo "export LFS=${LFS}" >> ~/.bashrc
     echo "LFS variable saved to ~/.bashrc"
+fi
+
+# Save LFS_SCRIPT_PATH variable to ~/.bashrc if not already there
+if ! grep -qs "export LFS_SCRIPT_PATH" ~/.bashrc; then
+    echo "export LFS_SCRIPT_PATH=${base_path}" >> ~/.bashrc
+    echo "LFS_SCRIPT_PATH variable saved to ~/.bashrc"
+fi
+
+# Save LFS_TGT variable to ~/.bashrc if not already there
+if ! grep -qs "export LFS_TGT" ~/.bashrc; then
+    echo "export LFS_TGT=$(uname -m)-lfs-linux-gnu" >> ~/.bashrc
+    echo "LFS_TGT variable saved to ~/.bashrc"
 fi
 
 # Source the ~/.bashrc file

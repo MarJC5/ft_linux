@@ -10,7 +10,6 @@
 # TOOLCHAIN SCRIPT
 # - Extract the packages
 
-
 # Exit on error
 set -e
 
@@ -33,9 +32,9 @@ if [ $? -eq 0 ]; then
     bash ./setup/setup_packages.sh
     bash ./setup/setup_layout.sh
     bash ./setup/setup_user.sh
-    # Run the toolchain scripts
-    bash ./toolchain/extract_packages.sh
+    echo -e "Please login as the user and run the toolchain script to extract the packages."
 else
     echo "Error: not all dependencies are installed to build the kernel"
     exit 1
 fi
+

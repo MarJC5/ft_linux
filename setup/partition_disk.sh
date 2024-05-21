@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Set the base directory for the script
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
 # Define the path to the configuration file
-config_file="${BASE_DIR}/../config/disk.conf"
+config_file="${config_path}/disk.conf"
 
 # Define color codes for output
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Create a partition on the disk to be used for the OS
 echo -e "${YELLOW}Partitioning the disk...${NC}"

@@ -6,9 +6,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-# Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
-
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'

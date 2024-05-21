@@ -7,10 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Base directory for the script relative to where it's executed from
-BASE_DIR=$(dirname "$(realpath "$0")")
+source "/media/share/utils/resolver.sh"
 
-# Path to the package configuration file
-config_file="${BASE_DIR}/../config/kernel.conf"
+# Define the path to the configuration file
+config_file="${config_path}/kernel.conf"
 
 # Color codes
 RED='\033[0;31m'
@@ -24,7 +24,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-source "${BASE_DIR}/../utils/parser.sh"
+source "${utils_path}/parser.sh"
 
 # Load configuration
 kernel_name=$(parse_ini "kernel" "name" "$config_file")
