@@ -85,3 +85,4 @@ EOF
 echo "Source the bash profile"
 
 source /home/$sys_name/.bash_profile
+source /home/$sys_name/.bashrc

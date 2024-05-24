@@ -8,7 +8,10 @@ This project is about creating a linux distribution from scratch. The goal is to
 
 ## Prerequisites
 
-- A linux distribution (Debian, Ubuntu, Fedora, Archlinux, etc.)
+- A linux distribution (Ubuntu, Debian, etc.)
+  - 4GB of RAM
+  - x86_64 architecture
+  - `sudo` rights
 - A virtual machine (VirtualBox, Vmware, etc.)
 - A linux distribution to build (LFS, Gentoo, etc.)
 - A lot of time

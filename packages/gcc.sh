@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -11,7 +9,9 @@ if [ -z "$BASH_VERSION" ]; then
     exec /bin/bash "$0" "$@"
 fi
 
-# Base directory for the script relative to where it's executed from
+# Assuming $LFS is set to the root of your LFS system
+# Example: export LFS=/mnt/lfs
+
 source "/media/share/utils/resolver.sh"
 
 # Load the utilities script
@@ -25,7 +25,7 @@ ext="tar.xz"
 extract_package "${package}.${ext}" "sources"
 
 # Change to the extracted directory
-cd "${LFS}/sources/${package}" || exit 1
+cd "${LFS}/usr/src/sources/${package}" || exit 1
 
 # Extract the dependencies
 for dep in "${deps[@]}"; do
@@ -34,7 +34,7 @@ for dep in "${deps[@]}"; do
     # Rename the extracted directory
     dep_dir=$(echo "$dep" | sed -e 's/.tar.*//')
     dep_dir_name=$(echo "$dep_dir" | sed -e 's/-[0-9].*//')
-    mv "${LFS}/sources/${package}/$dep_dir" "${LFS}/sources/${package}/$dep_dir_name"
+    mv "${LFS}/usr/src/sources/${package}/$dep_dir" "${LFS}/usr/src/sources/${package}/$dep_dir_name"
 done
 
 case $(uname -m) in
@@ -45,11 +45,18 @@ case $(uname -m) in
 esac
 
 # Create a build directory
-mkdir -v "${LFS}/sources/${package}/build"
-cd "${LFS}/sources/${package}/build" || exit 1
+mkdir -v "${LFS}/usr/src/sources/${package}/build"
+cd "${LFS}/usr/src/sources/${package}/build" || exit 1
 LFS_TGT=$(uname -m)-lfs-linux-gnu
 
-"${LFS}/sources/${package}/configure" \
+# Correct environmental variables setup
+LD_LIBRARY_PATH=$LFS/tools/lib
+LIBRARY_PATH=$LFS/tools/lib
+C_INCLUDE_PATH=$LFS/tools/include
+CPLUS_INCLUDE_PATH=$LFS/tools/include
+
+# Configure the build
+"${LFS}/usr/src/sources/${package}/configure" \
     --target=$LFS_TGT         \
     --prefix=$LFS/tools       \
     --with-glibc-version=2.39 \
@@ -71,13 +78,19 @@ LFS_TGT=$(uname -m)-lfs-linux-gnu
     --enable-languages=c,c++
 
 echo -e "Compiling the package ${YELLOW}${package}${NC}"
-make
+make -j$(nproc)
 
 echo -e "Installing the package ${YELLOW}${package}${NC}"
 make install
 
 echo -e "Package ${GREEN}${package}${NC} installed successfully"
 
-cd ..
+# Navigate to the correct directory and create the limits.h header
+cd "${LFS}/usr/src/sources/${package}"
+
+echo -e "Creating a full version of the internal header ${YELLOW}limits.h${NC}"
+
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h
+
+echo -e "${GREEN}limits.h${NC} created successfully in $(dirname $(${LFS_TGT}-gcc -print-libgcc-file-name))/include"

@@ -31,14 +31,14 @@ disk=$(parse_ini "partition" "disk" "$config_file")
 sys_name=$(parse_ini "system" "name" "$config_file")
 LFS="/mnt/${sys_name}"
 
-mkdir -v $LFS/sources
-chmod -v a+wt $LFS/sources
+mkdir -v $LFS/usr/src/sources
+chmod -v a+wt $LFS/usr/src/sources
 
 # Download the packages from the wget-list
-wget --input-file="${config_path}/wget-list-sysv" --continue --directory-prefix=$LFS/sources
+wget --input-file="${config_path}/wget-list-sysv" --continue --directory-prefix=$LFS/usr/src/sources
 
 # Verify the packages
-pushd $LFS/sources
+pushd $LFS/usr/src/sources
   md5sum -c "${config_path}/md5sums"
 popd
 

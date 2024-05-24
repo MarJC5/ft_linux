@@ -24,14 +24,14 @@ ext="tar.xz"
 extract_package "${package}.${ext}" "sources"
 
 # Change to the extracted directory
-cd "${LFS}/sources/${package}" || exit 1
+cd "${LFS}/usr/src/sources/${package}" || exit 1
 
 # Create a build directory
-mkdir -v "${LFS}/sources/${package}/build"
-cd "${LFS}/sources/${package}/build" || exit 1
+mkdir -v "${LFS}/usr/src/sources/${package}/build"
+cd "${LFS}/usr/src/sources/${package}/build" || exit 1
 
 # Configure the build
-"${LFS}/sources/${package}/configure" --prefix=$LFS/tools \
+"${LFS}/usr/src/sources/${package}/configure" --prefix=$LFS/tools \
              --with-sysroot=$LFS \
              --target=$LFS_TGT   \
              --disable-nls       \
@@ -40,7 +40,7 @@ cd "${LFS}/sources/${package}/build" || exit 1
              --enable-default-hash-style=gnu || exit 1
 
 echo -e "Compiling the package ${YELLOW}${package}${NC}"
-make
+make -j$(nproc)
 
 echo -e "Installing the package ${YELLOW}${package}${NC}"
 make install

@@ -36,11 +36,11 @@ extract_package() {
 
     # Extract the packages
     echo -e "Extracting package ${YELLOW}${package}${NC}..."
-    tar -xvf "${LFS}/sources/${package}" -C "${LFS}/${dest}"
+    tar -xvf "${LFS}/usr/src/sources/${package}" -C "${LFS}/usr/src/${dest}"
     # Check if package is extracted successfully
     if [ $? -ne 0 ]; then
         echo -e "Failed to extract package ${RED}${package}${NC}"
         exit 1
     fi
-    echo -e "Package ${GREEN}${package}${NC} extracted successfully to ${LFS}/${dest}"
+    echo -e "Package ${GREEN}${package}${NC} extracted successfully to ${LFS}/usr/src/${dest}"
 }
